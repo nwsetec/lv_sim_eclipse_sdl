@@ -55,6 +55,56 @@ static void memory_monitor(lv_task_t * param);
 /**********************
  *   GLOBAL FUNCTIONS
  **********************/
+LV_IMG_DECLARE(btn_on);
+
+
+void mem_leak(void);
+
+static void my_event_cb(lv_obj_t * obj, lv_event_t event)
+{
+    switch(event) {
+        case LV_EVENT_PRESSED:
+            //printf("Pressed\n");
+            break;
+
+        case LV_EVENT_SHORT_CLICKED:
+            //printf("Short clicked\n");
+            break;
+
+        case LV_EVENT_CLICKED:
+        	mem_leak();
+            printf("Clicked\n");
+            break;
+
+        case LV_EVENT_LONG_PRESSED:
+            //printf("Long press\n");
+            break;
+
+        case LV_EVENT_LONG_PRESSED_REPEAT:
+            //printf("Long press repeat\n");
+            break;
+
+        case LV_EVENT_RELEASED:
+            //printf("Released\n");
+            break;
+    }
+
+       /*Etc.*/
+}
+
+void mem_leak(void)
+{
+	lv_obj_clean(lv_scr_act());
+
+	/* Memory leak seems to occur when the following two lines are added
+	 * and only if they are rendered
+	 */
+	lv_obj_t *img1 = lv_img_create(lv_scr_act(), NULL);
+	lv_img_set_src(img1, &btn_on);
+
+	lv_obj_t * btn = lv_btn_create(lv_scr_act(), NULL);
+	lv_obj_set_event_cb(btn, my_event_cb);   /*Assign an event callback*/
+}
 
 int main(int argc, char ** argv)
 {
@@ -68,7 +118,9 @@ int main(int argc, char ** argv)
     hal_init();
 
     /*Create a demo*/
-    demo_create();
+    //demo_create();
+
+    mem_leak();
 
     /*Try the benchmark to see how fast your GUI is*/
     //    benchmark_create();
